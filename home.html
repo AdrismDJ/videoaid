@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Custom Video Player</title>
+    <link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"
+        integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous" />
+    <!--   <link rel="stylesheet" href="css/progress.css" />
+    <link rel="stylesheet" href="css/style.css" />
+
+    -->
+
+    <style>
+        /* SOURCE: https://css-tricks.com/styling-cross-browser-compatible-range-inputs-css/ */
+
+        input[type="range"] {
+            -webkit-appearance: none;
+            /* Hides the slider so that custom slider can be made */
+            width: 100%;
+            /* Specific width is required for Firefox. */
+            background: transparent;
+            /* Otherwise white in Chrome */
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+        }
+
+        input[type="range"]:focus {
+            outline: none;
+            /* Removes the blue border. You should probably do some kind of focus styling for accessibility reasons though. */
+        }
+
+        input[type="range"]::-ms-track {
+            width: 100%;
+            cursor: pointer;
+
+            /* Hides the slider so custom styles can be added */
+            background: transparent;
+            border-color: transparent;
+            color: transparent;
+        }
+
+        /* Special styling for WebKit/Blink */
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            border: 1px solid #000000;
+            height: 36px;
+            width: 16px;
+            border-radius: 3px;
+            background: #ffffff;
+            cursor: pointer;
+            margin-top: -14px;
+            /* You need to specify a margin in Chrome, but in Firefox and IE it is automatic */
+            box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
+            /* Add cool effects to your sliders! */
+        }
+
+        /* All the same stuff for Firefox */
+        input[type="range"]::-moz-range-thumb {
+            box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
+            border: 1px solid #000000;
+            height: 36px;
+            width: 16px;
+            border-radius: 3px;
+            background: #ffffff;
+            cursor: pointer;
+        }
+
+        /* All the same stuff for IE */
+        input[type="range"]::-ms-thumb {
+            box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
+            border: 1px solid #000000;
+            height: 36px;
+            width: 16px;
+            border-radius: 3px;
+            background: #ffffff;
+            cursor: pointer;
+        }
+
+        input[type="range"]::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 8.4px;
+            cursor: pointer;
+            box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
+            background: #3071a9;
+            border-radius: 1.3px;
+            border: 0.2px solid #010101;
+        }
+
+        input[type="range"]:focus::-webkit-slider-runnable-track {
+            background: #367ebd;
+        }
+
+        input[type="range"]::-moz-range-track {
+            width: 100%;
+            height: 8.4px;
+            cursor: pointer;
+            box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
+            background: #3071a9;
+            border-radius: 1.3px;
+            border: 0.2px solid #010101;
+        }
+
+        input[type="range"]::-ms-track {
+            width: 100%;
+            height: 8.4px;
+            cursor: pointer;
+            background: transparent;
+            border-color: transparent;
+            border-width: 16px 0;
+            color: transparent;
+        }
+
+        input[type="range"]::-ms-fill-lower {
+            background: #2a6495;
+            border: 0.2px solid #010101;
+            border-radius: 2.6px;
+            box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
+        }
+
+        input[type="range"]:focus::-ms-fill-lower {
+            background: #3071a9;
+        }
+
+        input[type="range"]::-ms-fill-upper {
+            background: #3071a9;
+            border: 0.2px solid #010101;
+            border-radius: 2.6px;
+            box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
+        }
+
+        input[type="range"]:focus::-ms-fill-upper {
+            background: #367ebd;
+        }
+    </style>
+
+    <style>
+        @import url("https://fonts.googleapis.com/css?family=Questrial&display=swap");
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            height: auto;
+        }
+
+        body {
+            font-family: "Questrial", sans-serif;
+            background-color: #111;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .header {
+            color: #fff;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: left;
+            width: 100vw;
+            padding: 10px 0 20px 30px;
+        }
+
+        .cabezal {
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100vw;
+            padding: 10px;
+        }
+
+        footer {
+            color: rgb(240, 240, 240);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100vw;
+
+            padding: 50px 10px;
+        }
+
+        main {
+            background-image: url("https://images.unsplash.com/photo-1553526777-5ffa3b3248d8?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=387&q=80");
+            background-repeat: no-repeat;
+            background-size: cover;
+            background-position: center center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 70%;
+            width: 100vw;
+            padding: 50px 0;
+        }
+
+        h1 {
+            color: #fff;
+        }
+
+        .screen {
+            cursor: pointer;
+            width: 50%;
+            background-color: #000 !important;
+            border-top-left-radius: 10px;
+            border-top-right-radius: 10px;
+        }
+
+        .controls {
+            background: #333;
+            color: #fff;
+            width: 50%;
+            border-bottom-left-radius: 10px;
+            border-bottom-right-radius: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 10px;
+        }
+
+        .controls .btn {
+            border: 0;
+            background: transparent;
+            cursor: pointer;
+        }
+
+        .controls .fa-play {
+            color: #28a745;
+        }
+
+        .controls .fa-stop {
+            color: #dc3545;
+        }
+
+        .controls .fa-pause {
+            color: #fff;
+        }
+
+        .controls .timestamp {
+            color: #fff;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+
+        .btn:focus {
+            outline: 0;
+        }
+
+        @media (max-width: 800px) {
+
+            .screen,
+            .controls {
+                width: 90%;
+            }
+        }
+    </style>
+
+</head>
+
+<body>
+
+    <header>
+        <div class="header">
+            <img src="img/logotipoB.png" alt="">
+            <h1 class="cabezal">Página de Video</h1>
+        </div>
+    </header>
+
+    <main>
+
+        <video id="video" class="screen">
+            <source src=http://techslides.com/demos/sample-videos/small.webm type=video/webm>
+            <source src=http://techslides.com/demos/sample-videos/small.ogv type=video/ogg>
+            <source src=http://techslides.com/demos/sample-videos/small.mp4 type=video/mp4>
+            <source src=http://techslides.com/demos/sample-videos/small.3gp type=video/3gp>
+        </video>
+
+        <div class="controls">
+            <button class="btn" id="play">
+                <i class="fa fa-play fa-2x"></i>
+            </button>
+            <button class="btn" id="stop">
+                <i class="fa fa-stop fa-2x"></i>
+            </button>
+            <input type="range" id="progress" class="progress" min="0" max="100" step="0.1" value="0" />
+            <span class="timestamp" id="timestamp">00:00</span>
+        </div>
+
+    </main>
+
+    <footer>
+        <strong>Adrian Ismael Delgado Jauregui / 219767647 / Conceptualización de servicios en la nube /
+            adrismael@gmail.com </strong>
+    </footer>
+
+</body>
+
+<!--<script src="script.js"></script>-->
+
+<script>
+
+    const video = document.getElementById("video");
+    const play = document.getElementById("play");
+    const Stop = document.getElementById("stop");
+    const progress = document.getElementById("progress");
+    const timestamp = document.getElementById("timestamp");
+
+    // Play & pause video
+    function toggleVideoStatus() {
+        if (video.paused) {
+            video.play();
+        } else {
+            video.pause();
+        }
+    }
+
+    // Update play/pause icon
+    function updatePlayIcon() {
+        if (video.paused) {
+            play.innerHTML = '<i class="fa fa-play fa-2x"></i>';
+        } else {
+            play.innerHTML = '<i class="fa fa-pause fa-2x"></i>';
+        }
+    }
+
+    // Update progress & timestamp
+    function updateProgress() {
+        progress.value = (video.currentTime / video.duration) * 100;
+        //console.log(progress.value);
+        //console.log(video.currentTime, video.duration);
+
+        // Get minutes.
+        let mins = Math.floor(video.currentTime / 60);
+        if (mins < 10) {
+            mins = "0" + String(mins);
+        }
+
+        // Get seconds.
+        let secs = Math.floor(video.currentTime % 60);
+        if (secs < 10) {
+            secs = "0" + String(secs);
+        }
+
+        timestamp.innerHTML = `${mins}:${secs}`;
+    }
+
+    // Set video time to progress
+    function setVideoProgress() {
+        video.currentTime = (+progress.value * video.duration) / 100;
+    }
+
+    // Stop video
+    function stopVideo() {
+        video.currentTime = 0;
+        video.pause();
+    }
+
+    // Event Listeners
+    video.addEventListener("click", toggleVideoStatus);
+    video.addEventListener("pause", updatePlayIcon);
+    video.addEventListener("play", updatePlayIcon);
+    video.addEventListener("timeupdate", updateProgress);
+
+    play.addEventListener("click", toggleVideoStatus);
+
+    Stop.addEventListener("click", stopVideo);
+
+    progress.addEventListener("change", setVideoProgress);
+
+</script>
+
+</html>
+
+<!-- https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Client-side_web_APIs/Video_and_audio_APIs -->
